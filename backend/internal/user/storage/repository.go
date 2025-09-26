@@ -3,9 +3,9 @@ package storage
 import (
 	"context"
 	"errors"
+	"github.com/Lionel-Wilson/arritech-takehome/internal/entity"
 	"github.com/jackc/pgx/v5/pgconn"
 
-	"github.com/Lionel-Wilson/arritech-takehome/internal/user/storage/entity"
 	"gorm.io/gorm"
 )
 

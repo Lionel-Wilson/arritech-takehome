@@ -1,8 +1,8 @@
 package mapper
 
 import (
+	"github.com/Lionel-Wilson/arritech-takehome/internal/entity"
 	"github.com/Lionel-Wilson/arritech-takehome/internal/user/domain"
-	"github.com/Lionel-Wilson/arritech-takehome/internal/user/storage/entity"
 )
 
 func MapUserEntityToDomain(ent *entity.User) domain.User {

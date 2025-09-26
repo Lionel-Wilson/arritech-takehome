@@ -5,11 +5,11 @@ import (
 	"errors"
 	"fmt"
 	"github.com/Lionel-Wilson/arritech-takehome/internal/config"
+	"github.com/Lionel-Wilson/arritech-takehome/internal/entity"
 	"github.com/Lionel-Wilson/arritech-takehome/internal/http/router"
 	internallogger "github.com/Lionel-Wilson/arritech-takehome/internal/logger"
 	"github.com/Lionel-Wilson/arritech-takehome/internal/user"
 	"github.com/Lionel-Wilson/arritech-takehome/internal/user/storage"
-	"github.com/Lionel-Wilson/arritech-takehome/internal/user/storage/entity"
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq" // <-- Add this line to register the Postgres driver
 	"gorm.io/driver/postgres"
