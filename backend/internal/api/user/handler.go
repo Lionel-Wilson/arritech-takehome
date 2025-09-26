@@ -3,12 +3,12 @@ package user
 import (
 	"errors"
 	"github.com/Lionel-Wilson/arritech-takehome/internal/user/storage"
+	"github.com/Lionel-Wilson/arritech-takehome/pkg/http/mapper"
 	"net/http"
 	"strconv"
 
 	"github.com/Lionel-Wilson/arritech-takehome/internal/api/user/dto"
 	dtomapper "github.com/Lionel-Wilson/arritech-takehome/internal/api/user/dto/mapper"
-	"github.com/Lionel-Wilson/arritech-takehome/internal/pkg/http/mapper"
 	"github.com/Lionel-Wilson/arritech-takehome/internal/user"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
