@@ -33,3 +33,23 @@ a,
     padding: 0 2rem;
   }
 }
+
+/* Light mode */
+:root {
+  --bg: #f5f7fa;     /* light grey */
+  --text: #2c3e50;
+  --link: #409eff;   /* Element Plus primary blue */
+}
+
+html, body {
+  background: var(--bg);
+  color: var(--text);
+  margin: 0;
+}
+
+/* A shared page container for header + content */
+.container {
+  max-width: 1080px;
+  margin: 32px auto;
+  padding: 0 16px;
+}

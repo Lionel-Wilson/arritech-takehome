@@ -5,6 +5,7 @@ import (
 
 	"github.com/Lionel-Wilson/arritech-takehome/internal/api/user"
 	internaluser "github.com/Lionel-Wilson/arritech-takehome/internal/user"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 )
@@ -15,6 +16,12 @@ func New(
 ) http.Handler {
 	gin.SetMode(gin.ReleaseMode)
 	router := gin.Default()
+
+	router.Use(cors.New(cors.Config{
+		AllowOrigins: []string{"http://localhost:5173"},
+		AllowMethods: []string{"GET", "POST", "PATCH", "DELETE", "OPTIONS"},
+		AllowHeaders: []string{"Content-Type", "Authorization"},
+	}))
 
 	userHandler := user.NewUserHandler(logger, userService)
 
