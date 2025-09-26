@@ -13,3 +13,13 @@ func MapCreateUserRequestToDomain(req dto.CreateUserRequest) domain.User {
 		Email:     req.Email,
 	}
 }
+
+func MapUpdateUserRequestToDomain(req dto.UpdateUserRequest, userID uint64) domain.UpdateUser {
+	return domain.UpdateUser{
+		ID:        userID,
+		Firstname: req.Firstname,
+		Lastname:  req.Lastname,
+		Age:       req.Age,
+		Email:     req.Email,
+	}
+}

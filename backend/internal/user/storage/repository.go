@@ -14,6 +14,7 @@ type UserRepository interface {
 	InsertUser(ctx context.Context, user *entity.User) error
 	DeleteUser(ctx context.Context, userID uint64) error
 	GetUserById(ctx context.Context, userID uint64) (*entity.User, error)
+	UpdateUser(ctx context.Context, user *entity.User) error
 }
 
 type userRepository struct {
@@ -45,7 +46,7 @@ func (r *userRepository) InsertUser(ctx context.Context, user *entity.User) erro
 }
 
 func (r *userRepository) DeleteUser(ctx context.Context, userID uint64) error {
-	err := r.db.WithContext(ctx).Delete(&entity.User{}, userID).Error
+	err := r.db.WithContext(ctx).Unscoped().Delete(&entity.User{}, userID).Error
 	if err != nil {
 		return err
 	}
@@ -63,4 +64,12 @@ func (r *userRepository) GetUserById(ctx context.Context, userID uint64) (*entit
 	}
 
 	return user, nil
+}
+
+func (r *userRepository) UpdateUser(ctx context.Context, user *entity.User) error {
+	err := r.db.WithContext(ctx).Save(user).Error
+	if err != nil {
+		return err
+	}
+	return nil
 }

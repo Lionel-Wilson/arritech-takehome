@@ -11,3 +11,11 @@ type User struct {
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
+
+type UpdateUser struct {
+	ID        uint64
+	Firstname *string
+	Lastname  *string
+	Age       *int
+	Email     *string
+}

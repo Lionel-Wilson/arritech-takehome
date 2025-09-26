@@ -67,6 +67,34 @@ func (h *handler) GetUser() gin.HandlerFunc {
 
 func (h *handler) UpdateUser() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		ctx := c.Request.Context()
+
+		userID, err := strconv.ParseUint(c.Param("id"), 10, 32)
+		if err != nil {
+			h.logger.WithContext(ctx).Errorf("Invalid user ID: %v", err)
+			c.JSON(http.StatusBadRequest, mapper.ToErrorResponse("invalid user ID"))
+		}
+
+		var updateUserRequest dto.UpdateUserRequest
+		err = c.ShouldBindJSON(&updateUserRequest)
+		if err != nil {
+			h.logger.WithContext(ctx).Errorf("Invalid request: %v", err)
+			c.JSON(http.StatusBadRequest, mapper.ToErrorResponse("invalid request"))
+
+			return
+		}
+
+		userObject := dtomapper.MapUpdateUserRequestToDomain(updateUserRequest, userID)
+
+		err = h.userService.UpdateUserDetails(ctx, userObject)
+		if err != nil {
+			h.logger.WithContext(ctx).Errorf("Failed to update user details: %v", err)
+			c.JSON(MapErrorToStatusCodeAndMessage(err))
+
+			return
+		}
+
+		c.JSON(http.StatusOK, mapper.ToSimpleMessageResponse("user details updated"))
 	}
 }
 
