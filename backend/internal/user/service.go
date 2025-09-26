@@ -13,6 +13,7 @@ import (
 //go:generate mockgen -source=service.go -destination=service_mock.go -package=user
 type Service interface {
 	CreateUser(ctx context.Context, user domain.User) error
+	DeleteUser(ctx context.Context, userID uint64) error
 }
 
 type userService struct {
@@ -40,6 +41,15 @@ func (s *userService) CreateUser(ctx context.Context, user domain.User) error {
 	err := s.userRepo.InsertUser(ctx, mapper.MapUserToEntity(user))
 	if err != nil {
 		return fmt.Errorf("failed to insert user into db: %w", err)
+	}
+
+	return nil
+}
+
+func (s *userService) DeleteUser(ctx context.Context, userID uint64) error {
+	err := s.userRepo.DeleteUser(ctx, userID)
+	if err != nil {
+		return fmt.Errorf("failed to delete user from db: %w", err)
 	}
 
 	return nil

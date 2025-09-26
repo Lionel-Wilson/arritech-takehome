@@ -40,13 +40,11 @@ func main() {
 
 	logger := internallogger.New(cfg)
 
-	// Connect with GORM (Postgres)
 	db, err := gorm.Open(postgres.Open(cfg.DatabaseURL), &gorm.Config{})
 	if err != nil {
 		logger.Fatalf("failed to connect to database: %v", err)
 	}
 
-	// Auto-migrate schema
 	err = db.AutoMigrate(&entity.User{})
 	if err != nil {
 		logger.Fatalf("failed to run migrations: %v", err)
@@ -60,7 +58,6 @@ func main() {
 		userService,
 	)
 
-	// Start server with context
 	server := &http.Server{
 		Addr:    fmt.Sprintf(":%s", cfg.Port),
 		Handler: mux,

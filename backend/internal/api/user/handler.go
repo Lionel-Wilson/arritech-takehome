@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/Lionel-Wilson/arritech-takehome/internal/user/storage"
 	"net/http"
+	"strconv"
 
 	"github.com/Lionel-Wilson/arritech-takehome/internal/api/user/dto"
 	dtomapper "github.com/Lionel-Wilson/arritech-takehome/internal/api/user/dto/mapper"
@@ -57,8 +58,23 @@ func (h *handler) UpdateUser() gin.HandlerFunc {
 
 func (h *handler) DeleteUser() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		// ctx := c.Request.Context()
+		ctx := c.Request.Context()
 
+		userID, err := strconv.ParseUint(c.Param("id"), 10, 32)
+		if err != nil {
+			h.logger.WithContext(ctx).Errorf("Invalid user ID: %v", err)
+			c.JSON(http.StatusBadRequest, mapper.ToErrorResponse("invalid user ID"))
+		}
+
+		err = h.userService.DeleteUser(ctx, userID)
+		if err != nil {
+			h.logger.WithContext(ctx).Errorf("Failed to delete user: %v", err)
+			c.JSON(MapErrorToStatusCodeAndMessage(err))
+
+			return
+		}
+
+		c.JSON(http.StatusOK, mapper.ToSimpleMessageResponse("user deleted"))
 	}
 }
 

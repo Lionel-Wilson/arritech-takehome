@@ -12,6 +12,7 @@ import (
 //go:generate mockgen -source=repository.go -destination=repository_mock.go -package=storage
 type UserRepository interface {
 	InsertUser(ctx context.Context, user *entity.User) error
+	DeleteUser(ctx context.Context, userID uint64) error
 }
 
 type userRepository struct {
@@ -36,5 +37,13 @@ func (r *userRepository) InsertUser(ctx context.Context, user *entity.User) erro
 		return err
 	}
 
+	return nil
+}
+
+func (r *userRepository) DeleteUser(ctx context.Context, userID uint64) error {
+	err := r.db.Delete(&entity.User{}, userID).Error
+	if err != nil {
+		return err
+	}
 	return nil
 }
