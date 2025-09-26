@@ -12,7 +12,7 @@ import { RouterLink, RouterView } from 'vue-router'
       </nav>
     </header>
 
-    <main>
+    <main class="section">
       <RouterView />
     </main>
   </div>
@@ -21,21 +21,22 @@ import { RouterLink, RouterView } from 'vue-router'
 <style scoped>
 .site-header {
   display: flex;
+  flex-direction: column;        /* stack title + nav on small screens */
   align-items: center;
-  gap: 16px;
-  margin-bottom: 16px;
+  gap: 6px;
+  margin-bottom: 12px;
 }
 
-.title {
-  margin: 0;
-  font-weight: 600;
+@media (min-width: 640px) {
+  .site-header {
+    flex-direction: row;         /* side by side on wider screens */
+    justify-content: center;     /* centered as a group */
+    gap: 16px;
+  }
 }
 
-.nav a {
-  color: var(--link);
-  text-decoration: none;
-  font-weight: 500;
-  margin-left: 8px;
-}
+.title { margin: 0; font-weight: 600; }
+.nav { display: flex; gap: 12px; }
+.nav a { color: var(--link); text-decoration: none; font-weight: 500; }
 .nav a:hover { text-decoration: underline; }
 </style>

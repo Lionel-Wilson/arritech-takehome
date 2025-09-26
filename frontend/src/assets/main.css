@@ -34,11 +34,11 @@ a,
   }
 }
 
-/* Light mode */
+/* Light theme base */
 :root {
-  --bg: #f5f7fa;     /* light grey */
+  --bg: #f5f7fa;
   --text: #2c3e50;
-  --link: #409eff;   /* Element Plus primary blue */
+  --link: #409eff;
 }
 
 html, body {
@@ -47,9 +47,27 @@ html, body {
   margin: 0;
 }
 
-/* A shared page container for header + content */
+/* One container that both the header and page content sit in */
 .container {
-  max-width: 1080px;
-  margin: 32px auto;
-  padding: 0 16px;
+  /* responsive width: takes most of the width on big screens, shrinks on small */
+  width: min(1100px, 92vw);
+  margin: 32px auto;       /* centered + a bit of top spacing */
+  padding: 0 12px;
+}
+
+/* A section that keeps content near the top and centered horizontally */
+.section {
+  display: grid;
+  place-items: start center;   /* top + center horizontally */
+}
+
+/* Panels (cards) fill the container width but still look good on mobile */
+.panel {
+  width: 100%;
+  background: #fff;
+}
+
+/* Optional: relax the max width on very large screens */
+@media (min-width: 1440px) {
+  .container { width: min(1280px, 90vw); }
 }

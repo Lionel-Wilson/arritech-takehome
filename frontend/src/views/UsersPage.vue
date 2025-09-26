@@ -38,7 +38,8 @@ watch([search, page, pageSize], fetchUsers)
 </script>
 
 <template>
-  <el-card class="card">
+  <div class="section">
+    <el-card class="panel el-card--always-shadow">
     <div style="display:flex; gap:12px; align-items:center; margin-bottom:12px">
       <el-input v-model="search" placeholder="Search name or email" clearable style="max-width:320px"/>
       <el-button type="primary" @click="fetchUsers">Search</el-button>
@@ -69,13 +70,13 @@ watch([search, page, pageSize], fetchUsers)
       />
     </div>
   </el-card>
+  </div>
 </template>
 
 
 <style scoped>
-.card {
-  background: #fff;
-  max-width: 900px;        /* slightly narrower than the container */
-  margin: 0 auto;          /* centered inside the container */
+/* Optional: add some breathing room inside the card */
+.panel :deep(.el-card__body) {
+  padding: 16px;
 }
 </style>

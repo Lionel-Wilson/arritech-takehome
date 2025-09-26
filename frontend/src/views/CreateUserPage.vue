@@ -5,15 +5,13 @@ const router = useRouter()
 </script>
 
 <template>
-  <el-card class="card">
+  <div class="section">
+    <el-card class="panel el-card--always-shadow">
   <UserForm mode="create" @submitted="() => router.push('/users')" />
   </el-card>
+  </div>
 </template>
 
 <style scoped>
-.card {
-  background: #fff;
-  max-width: 640px;
-  margin: 0 auto;
-}
+.panel :deep(.el-card__body) { padding: 16px; }
 </style>
