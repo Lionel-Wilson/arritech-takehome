@@ -16,6 +16,7 @@ type Service interface {
 	DeleteUser(ctx context.Context, userID uint64) error
 	GetUser(ctx context.Context, userID uint64) (domain.User, error)
 	UpdateUserDetails(ctx context.Context, updatedUser domain.UpdateUser) error
+	GetUsers(ctx context.Context) ([]domain.User, error)
 }
 
 type userService struct {
@@ -34,6 +35,20 @@ func NewUserService(
 }
 
 var ErrUserMustBeAtLeast18YearsOld = fmt.Errorf("user must be at least 18 years old")
+
+func (s *userService) GetUsers(ctx context.Context) ([]domain.User, error) {
+	userEntities, err := s.userRepo.GetUsers(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get users from db: %w", err)
+	}
+
+	var domainUsers []domain.User
+	for _, userEntity := range userEntities {
+		domainUsers = append(domainUsers, mapper.MapUserEntityToDomain(&userEntity))
+	}
+
+	return domainUsers, nil
+}
 
 func (s *userService) UpdateUserDetails(ctx context.Context, updatedUser domain.UpdateUser) error {
 	userDetails, err := s.GetUser(ctx, updatedUser.ID)

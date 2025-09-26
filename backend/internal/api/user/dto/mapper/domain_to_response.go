@@ -1,15 +1,33 @@
 package mapper
 
-import "github.com/Lionel-Wilson/arritech-takehome/internal/user/domain"
+import (
+	"github.com/Lionel-Wilson/arritech-takehome/internal/api/user/dto"
+	"github.com/Lionel-Wilson/arritech-takehome/internal/user/domain"
+)
 
-func MapUserToResponse(domain domain.User) User {
-	return User{
-		ID:        domain.ID,
-		Firstname: domain.Firstname,
-		Lastname:  domain.Lastname,
-		Age:       domain.Age,
-		Email:     domain.Email,
-		CreatedAt: domain.CreatedAt.String(),
-		UpdatedAt: domain.UpdatedAt.String(),
+func MapUsersToResponse(domainUsers []domain.User) dto.GetUsersResponse {
+	var users []dto.User
+	for _, user := range domainUsers {
+		users = append(users, mapUserToDto(user))
+	}
+	return dto.GetUsersResponse{
+		Users: users,
+	}
+}
+
+func MapUserToResponse(domain domain.User) dto.GetUserResponse {
+	return dto.GetUserResponse{
+		User: mapUserToDto(domain)}
+}
+
+func mapUserToDto(user domain.User) dto.User {
+	return dto.User{
+		ID:        user.ID,
+		Firstname: user.Firstname,
+		Lastname:  user.Lastname,
+		Age:       user.Age,
+		Email:     user.Email,
+		CreatedAt: user.CreatedAt.String(),
+		UpdatedAt: user.UpdatedAt.String(),
 	}
 }

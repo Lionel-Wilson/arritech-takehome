@@ -1,7 +1,11 @@
-package mapper
+package dto
 
-type UserResponse struct {
+type GetUserResponse struct {
 	User User `json:"user"`
+}
+
+type GetUsersResponse struct {
+	Users []User `json:"users"`
 }
 
 type User struct {

@@ -15,6 +15,7 @@ type UserRepository interface {
 	DeleteUser(ctx context.Context, userID uint64) error
 	GetUserById(ctx context.Context, userID uint64) (*entity.User, error)
 	UpdateUser(ctx context.Context, user *entity.User) error
+	GetUsers(ctx context.Context) ([]entity.User, error)
 }
 
 type userRepository struct {
@@ -31,6 +32,15 @@ var (
 	ErrUserEmailExists = errors.New("user email already exists")
 	ErrUserNotFound    = errors.New("user not found")
 )
+
+func (r *userRepository) GetUsers(ctx context.Context) ([]entity.User, error) {
+	var users []entity.User
+	err := r.db.WithContext(ctx).Find(&users).Error
+	if err != nil {
+		return nil, err
+	}
+	return users, nil
+}
 
 func (r *userRepository) InsertUser(ctx context.Context, user *entity.User) error {
 	err := r.db.WithContext(ctx).Create(user).Error

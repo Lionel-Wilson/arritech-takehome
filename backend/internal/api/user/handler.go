@@ -39,7 +39,17 @@ func NewUserHandler(
 
 func (h *handler) GetUsers() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		ctx := c.Request.Context()
 
+		users, err := h.userService.GetUsers(ctx)
+		if err != nil {
+			h.logger.WithContext(ctx).Errorf("Failed to get users: %v", err)
+			c.JSON(MapErrorToStatusCodeAndMessage(err))
+
+			return
+		}
+
+		c.JSON(http.StatusOK, dtomapper.MapUsersToResponse(users))
 	}
 }
 
