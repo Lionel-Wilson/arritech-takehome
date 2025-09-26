@@ -14,6 +14,7 @@ import (
 type Service interface {
 	CreateUser(ctx context.Context, user domain.User) error
 	DeleteUser(ctx context.Context, userID uint64) error
+	GetUser(ctx context.Context, userID uint64) (domain.User, error)
 }
 
 type userService struct {
@@ -53,4 +54,13 @@ func (s *userService) DeleteUser(ctx context.Context, userID uint64) error {
 	}
 
 	return nil
+}
+
+func (s *userService) GetUser(ctx context.Context, userID uint64) (domain.User, error) {
+	userEntity, err := s.userRepo.GetUserById(ctx, userID)
+	if err != nil {
+		return domain.User{}, fmt.Errorf("failed to get user from db: %w", err)
+	}
+
+	return mapper.MapUserEntityToDomain(userEntity), nil
 }

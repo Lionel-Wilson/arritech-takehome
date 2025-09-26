@@ -39,20 +39,34 @@ func NewUserHandler(
 
 func (h *handler) GetUsers() gin.HandlerFunc {
 	return func(c *gin.Context) {
+
 	}
 }
 
 func (h *handler) GetUser() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		// ctx := c.Request.Context()
+		ctx := c.Request.Context()
 
+		userID, err := strconv.ParseUint(c.Param("id"), 10, 32)
+		if err != nil {
+			h.logger.WithContext(ctx).Errorf("Invalid user ID: %v", err)
+			c.JSON(http.StatusBadRequest, mapper.ToErrorResponse("invalid user ID"))
+		}
+
+		userDomain, err := h.userService.GetUser(ctx, userID)
+		if err != nil {
+			h.logger.WithContext(ctx).Errorf("Failed to get user: %v", err)
+			c.JSON(MapErrorToStatusCodeAndMessage(err))
+
+			return
+		}
+
+		c.JSON(http.StatusOK, dtomapper.MapUserToResponse(userDomain))
 	}
 }
 
 func (h *handler) UpdateUser() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		// ctx := c.Request.Context()
-
 	}
 }
 
@@ -108,6 +122,8 @@ func (h *handler) CreateUser() gin.HandlerFunc {
 
 func MapErrorToStatusCodeAndMessage(err error) (code int, obj any) {
 	switch {
+	case errors.Is(err, storage.ErrUserNotFound):
+		return http.StatusNotFound, mapper.ToErrorResponse("User not found")
 	case errors.Is(err, storage.ErrUserEmailExists):
 		return http.StatusBadRequest, mapper.ToErrorResponse("User email already exists")
 	case errors.Is(err, user.ErrUserMustBeAtLeast18YearsOld):

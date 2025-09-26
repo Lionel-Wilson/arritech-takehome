@@ -13,6 +13,7 @@ import (
 type UserRepository interface {
 	InsertUser(ctx context.Context, user *entity.User) error
 	DeleteUser(ctx context.Context, userID uint64) error
+	GetUserById(ctx context.Context, userID uint64) (*entity.User, error)
 }
 
 type userRepository struct {
@@ -25,7 +26,10 @@ func NewUserRepository(db *gorm.DB) UserRepository {
 	}
 }
 
-var ErrUserEmailExists = errors.New("user email already exists")
+var (
+	ErrUserEmailExists = errors.New("user email already exists")
+	ErrUserNotFound    = errors.New("user not found")
+)
 
 func (r *userRepository) InsertUser(ctx context.Context, user *entity.User) error {
 	err := r.db.WithContext(ctx).Create(user).Error
@@ -46,4 +50,17 @@ func (r *userRepository) DeleteUser(ctx context.Context, userID uint64) error {
 		return err
 	}
 	return nil
+}
+
+func (r *userRepository) GetUserById(ctx context.Context, userID uint64) (*entity.User, error) {
+	var user *entity.User
+	err := r.db.WithContext(ctx).First(&user, userID).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, ErrUserNotFound
+		}
+		return nil, err
+	}
+
+	return user, nil
 }
