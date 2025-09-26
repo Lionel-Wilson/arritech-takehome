@@ -31,7 +31,18 @@ services:
     networks:
       - arritech-network
 
-
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: arritech_frontend
+    restart: unless-stopped
+    depends_on:
+      - api
+    ports:
+      - "5173:80"       # open http://localhost:5173
+    networks:
+      - arritech-network
 
 volumes:
   pgdata:
