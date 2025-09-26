@@ -3,9 +3,10 @@ package storage
 import (
 	"context"
 	"errors"
+	"strings"
+
 	"github.com/Lionel-Wilson/arritech-takehome/internal/entity"
 	"github.com/jackc/pgx/v5/pgconn"
-
 	"gorm.io/gorm"
 )
 
@@ -15,7 +16,7 @@ type UserRepository interface {
 	DeleteUser(ctx context.Context, userID uint64) error
 	GetUserById(ctx context.Context, userID uint64) (*entity.User, error)
 	UpdateUser(ctx context.Context, user *entity.User) error
-	GetUsers(ctx context.Context) ([]entity.User, error)
+	GetUsers(ctx context.Context, p GetUsersParams) ([]entity.User, int64, error)
 }
 
 type userRepository struct {
@@ -33,13 +34,46 @@ var (
 	ErrUserNotFound    = errors.New("user not found")
 )
 
-func (r *userRepository) GetUsers(ctx context.Context) ([]entity.User, error) {
-	var users []entity.User
-	err := r.db.WithContext(ctx).Find(&users).Error
-	if err != nil {
-		return nil, err
+type GetUsersParams struct {
+	Query    string
+	Page     int
+	PageSize int
+}
+
+func (r *userRepository) GetUsers(ctx context.Context, p GetUsersParams) ([]entity.User, int64, error) {
+	db := r.db.WithContext(ctx).Model(&entity.User{}).Where("deleted_at IS NULL")
+
+	if p.Query != "" {
+		like := "%" + strings.ToLower(p.Query) + "%"
+		db = db.Where(
+			"LOWER(firstname) LIKE ? OR LOWER(lastname) LIKE ? OR LOWER(email) LIKE ?",
+			like, like, like,
+		)
 	}
-	return users, nil
+
+	var total int64
+	if err := db.Count(&total).Error; err != nil {
+		return nil, 0, err
+	}
+
+	if p.Page <= 0 {
+		p.Page = 1
+	}
+
+	if p.PageSize <= 0 || p.PageSize > 100 {
+		p.PageSize = 10
+	}
+
+	offset := (p.Page - 1) * p.PageSize
+
+	var users []entity.User
+	err := db.
+		Order("id ASC").
+		Limit(p.PageSize).
+		Offset(offset).
+		Find(&users).Error
+
+	return users, total, err
 }
 
 func (r *userRepository) InsertUser(ctx context.Context, user *entity.User) error {
@@ -49,6 +83,7 @@ func (r *userRepository) InsertUser(ctx context.Context, user *entity.User) erro
 		if errors.As(err, &pgErr) && pgErr.Code == "23505" { // unique_violation
 			return ErrUserEmailExists
 		}
+
 		return err
 	}
 
@@ -60,16 +95,19 @@ func (r *userRepository) DeleteUser(ctx context.Context, userID uint64) error {
 	if err != nil {
 		return err
 	}
+
 	return nil
 }
 
 func (r *userRepository) GetUserById(ctx context.Context, userID uint64) (*entity.User, error) {
 	var user *entity.User
+
 	err := r.db.WithContext(ctx).First(&user, userID).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, ErrUserNotFound
 		}
+
 		return nil, err
 	}
 
@@ -81,5 +119,6 @@ func (r *userRepository) UpdateUser(ctx context.Context, user *entity.User) erro
 	if err != nil {
 		return err
 	}
+
 	return nil
 }

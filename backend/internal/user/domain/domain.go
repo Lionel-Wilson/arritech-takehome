@@ -19,3 +19,9 @@ type UpdateUser struct {
 	Age       *int
 	Email     *string
 }
+
+type GetUsersParams struct {
+	Query string
+	Page  int
+	Size  int
+}

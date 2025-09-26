@@ -4,6 +4,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
+	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
+
 	"github.com/Lionel-Wilson/arritech-takehome/internal/config"
 	"github.com/Lionel-Wilson/arritech-takehome/internal/entity"
 	"github.com/Lionel-Wilson/arritech-takehome/internal/http/router"
@@ -14,11 +20,6 @@ import (
 	_ "github.com/lib/pq" // <-- Add this line to register the Postgres driver
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
-	"log"
-	"net/http"
-	"os"
-	"os/signal"
-	"syscall"
 )
 
 func main() {

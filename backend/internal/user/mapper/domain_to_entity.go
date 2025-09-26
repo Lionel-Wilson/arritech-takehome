@@ -20,5 +20,6 @@ func MapUserToEntity(user domain.User) *entity.User {
 	if !user.CreatedAt.IsZero() {
 		userEntity.CreatedAt = user.CreatedAt
 	}
+
 	return userEntity
 }

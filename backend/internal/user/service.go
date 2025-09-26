@@ -16,7 +16,7 @@ type Service interface {
 	DeleteUser(ctx context.Context, userID uint64) error
 	GetUser(ctx context.Context, userID uint64) (domain.User, error)
 	UpdateUserDetails(ctx context.Context, updatedUser domain.UpdateUser) error
-	GetUsers(ctx context.Context) ([]domain.User, error)
+	GetUsers(ctx context.Context, query domain.GetUsersParams) ([]domain.User, int64, error)
 }
 
 type userService struct {
@@ -36,10 +36,14 @@ func NewUserService(
 
 var ErrUserMustBeAtLeast18YearsOld = fmt.Errorf("user must be at least 18 years old")
 
-func (s *userService) GetUsers(ctx context.Context) ([]domain.User, error) {
-	userEntities, err := s.userRepo.GetUsers(ctx)
+func (s *userService) GetUsers(ctx context.Context, query domain.GetUsersParams) ([]domain.User, int64, error) {
+	userEntities, total, err := s.userRepo.GetUsers(ctx, storage.GetUsersParams{
+		Query:    query.Query,
+		Page:     query.Page,
+		PageSize: query.Size,
+	})
 	if err != nil {
-		return nil, fmt.Errorf("failed to get users from db: %w", err)
+		return nil, 0, fmt.Errorf("failed to get users from db: %w", err)
 	}
 
 	var domainUsers []domain.User
@@ -47,7 +51,7 @@ func (s *userService) GetUsers(ctx context.Context) ([]domain.User, error) {
 		domainUsers = append(domainUsers, mapper.MapUserEntityToDomain(&userEntity))
 	}
 
-	return domainUsers, nil
+	return domainUsers, total, nil
 }
 
 func (s *userService) UpdateUserDetails(ctx context.Context, updatedUser domain.UpdateUser) error {
@@ -59,15 +63,19 @@ func (s *userService) UpdateUserDetails(ctx context.Context, updatedUser domain.
 	if updatedUser.Firstname != nil {
 		userDetails.Firstname = *updatedUser.Firstname
 	}
+
 	if updatedUser.Lastname != nil {
 		userDetails.Lastname = *updatedUser.Lastname
 	}
+
 	if updatedUser.Age != nil {
 		if *updatedUser.Age < 18 {
 			return ErrUserMustBeAtLeast18YearsOld
 		}
+
 		userDetails.Age = *updatedUser.Age
 	}
+
 	if updatedUser.Email != nil {
 		userDetails.Email = *updatedUser.Email
 	}
@@ -76,8 +84,8 @@ func (s *userService) UpdateUserDetails(ctx context.Context, updatedUser domain.
 	if err != nil {
 		return fmt.Errorf("failed to update user details: %w", err)
 	}
-	return nil
 
+	return nil
 }
 
 func (s *userService) CreateUser(ctx context.Context, user domain.User) error {

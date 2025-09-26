@@ -2,14 +2,16 @@ package user
 
 import (
 	"errors"
-	"github.com/Lionel-Wilson/arritech-takehome/internal/user/storage"
-	"github.com/Lionel-Wilson/arritech-takehome/pkg/http/mapper"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/Lionel-Wilson/arritech-takehome/internal/api/user/dto"
 	dtomapper "github.com/Lionel-Wilson/arritech-takehome/internal/api/user/dto/mapper"
 	"github.com/Lionel-Wilson/arritech-takehome/internal/user"
+	"github.com/Lionel-Wilson/arritech-takehome/internal/user/domain"
+	"github.com/Lionel-Wilson/arritech-takehome/internal/user/storage"
+	"github.com/Lionel-Wilson/arritech-takehome/pkg/http/mapper"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 )
@@ -41,7 +43,26 @@ func (h *handler) GetUsers() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		ctx := c.Request.Context()
 
-		users, err := h.userService.GetUsers(ctx)
+		q := strings.TrimSpace(c.Query("q"))
+
+		page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+		size, _ := strconv.Atoi(c.DefaultQuery("page_size", "10"))
+
+		if page <= 0 {
+			page = 1
+		}
+
+		if size <= 0 || size > 100 {
+			size = 10
+		}
+
+		users, total, err := h.userService.GetUsers(ctx,
+			domain.GetUsersParams{
+				Query: q,
+				Page:  page,
+				Size:  size,
+			},
+		)
 		if err != nil {
 			h.logger.WithContext(ctx).Errorf("Failed to get users: %v", err)
 			c.JSON(MapErrorToStatusCodeAndMessage(err))
@@ -49,7 +70,7 @@ func (h *handler) GetUsers() gin.HandlerFunc {
 			return
 		}
 
-		c.JSON(http.StatusOK, dtomapper.MapUsersToResponse(users))
+		c.JSON(http.StatusOK, dtomapper.MapUsersToResponse(users, page, size, total))
 	}
 }
 
@@ -86,6 +107,7 @@ func (h *handler) UpdateUser() gin.HandlerFunc {
 		}
 
 		var updateUserRequest dto.UpdateUserRequest
+
 		err = c.ShouldBindJSON(&updateUserRequest)
 		if err != nil {
 			h.logger.WithContext(ctx).Errorf("Invalid request: %v", err)

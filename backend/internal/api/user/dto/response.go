@@ -6,6 +6,9 @@ type GetUserResponse struct {
 
 type GetUsersResponse struct {
 	Users []User `json:"users"`
+	Page  int    `json:"page"`
+	Size  int    `json:"size"`
+	Total int64  `json:"total"`
 }
 
 type User struct {

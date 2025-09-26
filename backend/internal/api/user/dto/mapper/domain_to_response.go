@@ -5,13 +5,16 @@ import (
 	"github.com/Lionel-Wilson/arritech-takehome/internal/user/domain"
 )
 
-func MapUsersToResponse(domainUsers []domain.User) dto.GetUsersResponse {
+func MapUsersToResponse(domainUsers []domain.User, page, size int, total int64) dto.GetUsersResponse {
 	var users []dto.User
 	for _, user := range domainUsers {
 		users = append(users, mapUserToDto(user))
 	}
 	return dto.GetUsersResponse{
 		Users: users,
+		Total: total,
+		Page:  page,
+		Size:  size,
 	}
 }
 
