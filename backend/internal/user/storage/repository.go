@@ -41,7 +41,7 @@ func (r *userRepository) InsertUser(ctx context.Context, user *entity.User) erro
 }
 
 func (r *userRepository) DeleteUser(ctx context.Context, userID uint64) error {
-	err := r.db.Delete(&entity.User{}, userID).Error
+	err := r.db.WithContext(ctx).Delete(&entity.User{}, userID).Error
 	if err != nil {
 		return err
 	}
