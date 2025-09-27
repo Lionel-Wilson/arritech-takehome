@@ -26,3 +26,7 @@ You can spin up the entire stack (backend, frontend, and database) with:
 ```bash
 docker-compose up --build
 ```
+
+Frontend will be available at http://localhost:5173.
+
+API will be available at http://localhost:8080.
