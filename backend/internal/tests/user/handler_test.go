@@ -1,6 +1,7 @@
 package user
 
 import (
+	"bytes"
 	"encoding/json"
 	"github.com/Lionel-Wilson/arritech-takehome/internal/http/router"
 	"github.com/Lionel-Wilson/arritech-takehome/internal/user"
@@ -120,6 +121,105 @@ func TestGetUsersHandler(t *testing.T) {
 			require.Equal(t, tc.wantStatus, w.Code)
 			var actual map[string]interface{}
 			err := json.Unmarshal(w.Body.Bytes(), &actual)
+			require.NoError(t, err)
+
+			assert.Equal(t, tc.wantBody, actual)
+		})
+	}
+}
+
+func TestCreateUserHandler(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockService := user.NewMockService(ctrl)
+	logger := logrus.New()
+
+	tests := []struct {
+		name       string
+		mock       func(mockService *user.MockService)
+		body       map[string]any
+		wantStatus int
+		wantBody   map[string]any
+	}{
+		{
+			name: "success",
+			body: map[string]any{
+				"firstname": "Son",
+				"lastname":  "Goku",
+				"age":       40,
+				"email":     "Kakarot@gmail.com",
+			},
+			mock: func(mockService *user.MockService) {
+				mockService.EXPECT().CreateUser(gomock.Any(), domain.User{
+					Firstname: "Son",
+					Lastname:  "Goku",
+					Age:       40,
+					Email:     "Kakarot@gmail.com",
+				}).Return(nil)
+			},
+			wantStatus: http.StatusOK,
+			wantBody: map[string]interface{}{
+				"message": "user created",
+			},
+		},
+		{
+			name: "under age error",
+			body: map[string]any{
+				"firstname": "Son",
+				"lastname":  "Goku",
+				"age":       15,
+				"email":     "Kakarot@gmail.com",
+			},
+			mock: func(mockService *user.MockService) {
+				mockService.EXPECT().CreateUser(gomock.Any(), domain.User{
+					Firstname: "Son",
+					Lastname:  "Goku",
+					Age:       15,
+					Email:     "Kakarot@gmail.com",
+				}).Return(user.ErrUserMustBeAtLeast18YearsOld)
+			},
+			wantStatus: http.StatusBadRequest,
+			wantBody: map[string]interface{}{
+				"error": "User must be at least 18 years old",
+			},
+		},
+		{
+			name: "internal server error",
+			body: map[string]any{
+				"firstname": "Son",
+				"lastname":  "Goku",
+				"age":       40,
+				"email":     "Kakarot@gmail.com",
+			},
+			mock: func(mockService *user.MockService) {
+				mockService.EXPECT().CreateUser(gomock.Any(), gomock.Any()).Return(assert.AnError)
+			},
+			wantStatus: http.StatusInternalServerError,
+			wantBody: map[string]interface{}{
+				"error": "Something went wrong",
+			},
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			mux := router.New(
+				logger,
+				mockService,
+			)
+			tc.mock(mockService)
+
+			body, err := json.Marshal(tc.body)
+			require.NoError(t, err)
+
+			w := httptest.NewRecorder()
+			req := httptest.NewRequest(http.MethodPost, "/api/v1/users/", bytes.NewReader(body))
+			mux.ServeHTTP(w, req)
+
+			require.Equal(t, tc.wantStatus, w.Code)
+			var actual map[string]interface{}
+			err = json.Unmarshal(w.Body.Bytes(), &actual)
 			require.NoError(t, err)
 
 			assert.Equal(t, tc.wantBody, actual)
