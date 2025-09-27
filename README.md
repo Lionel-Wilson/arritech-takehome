@@ -21,8 +21,20 @@ The application provides basic **CRUD functionality** for managing users (list, 
 
 ## 🚀 Running with Docker (recommended)
 
-You can spin up the entire stack (backend, frontend, and database) with:
+1. Add the below .env file into the root of the backend folder:
+```
+PORT=8080
+LOG_LEVEL=debug
+ENV=local
+DATABASE_URL=postgres://arritechappuser:arritech_2025@db:5432/arritech_db?sslmode=disable
+```
 
+2. Add the below .env file into the root of the frontend folder:
+```
+VITE_API_BASE_URL=http://localhost:8085/api/v1
+```
+
+3. Run the below command from the root of the repository
 ```bash
 docker-compose up --build
 ```

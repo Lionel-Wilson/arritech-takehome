@@ -16,18 +16,12 @@ import (
 	internallogger "github.com/Lionel-Wilson/arritech-takehome/internal/logger"
 	"github.com/Lionel-Wilson/arritech-takehome/internal/user"
 	"github.com/Lionel-Wilson/arritech-takehome/internal/user/storage"
-	"github.com/joho/godotenv"
 	_ "github.com/lib/pq" // <-- Add this line to register the Postgres driver
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
 func main() {
-	// Load environment variables from .env file (only in development)
-	if err := godotenv.Load(); err != nil {
-		log.Println("No .env file found or error loading .env file")
-	}
-
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
