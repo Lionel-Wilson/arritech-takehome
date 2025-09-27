@@ -82,6 +82,8 @@ func (h *handler) GetUser() gin.HandlerFunc {
 		if err != nil {
 			h.logger.WithContext(ctx).Errorf("Invalid user ID: %v", err)
 			c.JSON(http.StatusBadRequest, mapper.ToErrorResponse("invalid user ID"))
+			return
+
 		}
 
 		userDomain, err := h.userService.GetUser(ctx, userID)
@@ -104,6 +106,7 @@ func (h *handler) UpdateUser() gin.HandlerFunc {
 		if err != nil {
 			h.logger.WithContext(ctx).Errorf("Invalid user ID: %v", err)
 			c.JSON(http.StatusBadRequest, mapper.ToErrorResponse("invalid user ID"))
+			return
 		}
 
 		var updateUserRequest dto.UpdateUserRequest
@@ -138,6 +141,7 @@ func (h *handler) DeleteUser() gin.HandlerFunc {
 		if err != nil {
 			h.logger.WithContext(ctx).Errorf("Invalid user ID: %v", err)
 			c.JSON(http.StatusBadRequest, mapper.ToErrorResponse("invalid user ID"))
+			return
 		}
 
 		err = h.userService.DeleteUser(ctx, userID)
