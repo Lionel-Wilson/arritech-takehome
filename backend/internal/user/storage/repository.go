@@ -3,6 +3,7 @@ package storage
 import (
 	"context"
 	"errors"
+	"strconv"
 	"strings"
 
 	"github.com/Lionel-Wilson/arritech-takehome/internal/entity"
@@ -43,12 +44,21 @@ type GetUsersParams struct {
 func (r *userRepository) GetUsers(ctx context.Context, p GetUsersParams) ([]entity.User, int64, error) {
 	db := r.db.WithContext(ctx).Model(&entity.User{}).Where("deleted_at IS NULL")
 
-	if p.Query != "" {
-		like := "%" + strings.ToLower(p.Query) + "%"
-		db = db.Where(
+	if q := strings.TrimSpace(p.Query); q != "" {
+		like := "%" + strings.ToLower(q) + "%"
+
+		// Base text search
+		cond := r.db.Where(
 			"LOWER(firstname) LIKE ? OR LOWER(lastname) LIKE ? OR LOWER(email) LIKE ?",
 			like, like, like,
 		)
+
+		// If the query is numeric, allow searching by exact user id too.
+		if id, err := strconv.Atoi(q); err == nil {
+			cond = cond.Or("id = ?", id)
+		}
+
+		db = db.Where(cond)
 	}
 
 	var total int64
@@ -59,11 +69,9 @@ func (r *userRepository) GetUsers(ctx context.Context, p GetUsersParams) ([]enti
 	if p.Page <= 0 {
 		p.Page = 1
 	}
-
 	if p.PageSize <= 0 || p.PageSize > 100 {
 		p.PageSize = 10
 	}
-
 	offset := (p.Page - 1) * p.PageSize
 
 	var users []entity.User
@@ -75,7 +83,6 @@ func (r *userRepository) GetUsers(ctx context.Context, p GetUsersParams) ([]enti
 
 	return users, total, err
 }
-
 func (r *userRepository) InsertUser(ctx context.Context, user *entity.User) error {
 	err := r.db.WithContext(ctx).Create(user).Error
 	if err != nil {
