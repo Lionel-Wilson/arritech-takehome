@@ -1,6 +1,7 @@
 package user
 
 import (
+	"fmt"
 	"github.com/Lionel-Wilson/arritech-takehome/internal/entity"
 	"github.com/Lionel-Wilson/arritech-takehome/internal/user"
 	"github.com/Lionel-Wilson/arritech-takehome/internal/user/domain"
@@ -59,6 +60,26 @@ func Test_service_CreateUser(t *testing.T) {
 
 			},
 			wantErr: user.ErrUserMustBeAtLeast18YearsOld,
+		},
+		{
+			name: "duplicate email error",
+			user: domain.User{
+				Firstname: "Son",
+				Lastname:  "Goku",
+				Age:       30,
+				Email:     "Kakarot@gmail.com",
+			},
+			mock: func() {
+				mockRepository.EXPECT().InsertUser(gomock.Any(),
+					&entity.User{
+						Firstname: "Son",
+						Lastname:  "Goku",
+						Age:       30,
+						Email:     "Kakarot@gmail.com",
+					},
+				).Return(storage.ErrUserEmailExists)
+			},
+			wantErr: fmt.Errorf("failed to insert user into db: %w", storage.ErrUserEmailExists),
 		},
 	}
 
