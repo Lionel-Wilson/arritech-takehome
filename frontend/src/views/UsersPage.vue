@@ -74,18 +74,20 @@ onMounted(fetchUsers)
         </router-link>
       </div>
 
-      <el-table :data="users" v-loading="loading" stripe>
+      <el-table :data="users" table-layout="auto" v-loading="loading" stripe class="users-table" >
         <el-table-column prop="id" label="ID" width="80" />
         <el-table-column prop="firstname" label="First name" />
         <el-table-column prop="lastname" label="Last name" />
         <el-table-column prop="email" label="Email" />
         <el-table-column prop="age" label="Age" width="80" />
-        <el-table-column label="Actions" width="180">
+        <el-table-column label="Actions" min-width="170" class-name="col-actions">
           <template #default="{ row }">
-            <router-link :to="`/users/${row.id}`">
-              <el-button size="small">Edit</el-button>
-            </router-link>
-            <el-button size="small" type="danger" @click="confirmDelete(row)">Delete</el-button>
+            <div class="actions">
+              <router-link :to="`/users/${row.id}`">
+                <el-button size="small">Edit</el-button>
+              </router-link>
+              <el-button size="small" type="danger" @click="confirmDelete(row)">Delete</el-button>
+            </div>
           </template>
         </el-table-column>
       </el-table>
@@ -110,4 +112,20 @@ onMounted(fetchUsers)
 .toolbar { display: flex; gap: 12px; align-items: center; margin-bottom: 12px; }
 .toolbar :deep(.el-input) { max-width: 320px; }
 .pager { margin-top: 12px; display: flex; justify-content: flex-end; }
+</style>
+
+<style scoped>
+/* Only affect the Actions column */
+.users-table :deep(.col-actions .cell) {
+  /* Keep buttons on one line and spaced */
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  white-space: nowrap;
+}
+
+/* Optional: prevent buttons from stretching or wrapping on tiny widths */
+.users-table :deep(.col-actions .cell .el-button) {
+  flex: 0 0 auto;
+}
 </style>

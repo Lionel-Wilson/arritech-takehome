@@ -50,7 +50,7 @@ html, body {
 /* One container that both the header and page content sit in */
 .container {
   /* responsive width: takes most of the width on big screens, shrinks on small */
-  width: min(1100px, 92vw);
+  width: min(1280px, 94vw);
   margin: 32px auto;       /* centered + a bit of top spacing */
   padding: 0 12px;
 }
