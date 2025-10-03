@@ -80,6 +80,7 @@ onMounted(fetchUsers)
         <el-table-column prop="lastname" label="Last name" />
         <el-table-column prop="email" label="Email" />
         <el-table-column prop="age" label="Age" width="80" />
+        <el-table-column prop="phonenumber" label="Phone Number" width="80" />
         <el-table-column label="Actions" min-width="170" class-name="col-actions">
           <template #default="{ row }">
             <div class="actions">

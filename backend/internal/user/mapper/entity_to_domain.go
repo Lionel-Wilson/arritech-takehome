@@ -7,12 +7,13 @@ import (
 
 func MapUserEntityToDomain(ent *entity.User) domain.User {
 	return domain.User{
-		ID:        ent.ID,
-		Firstname: ent.Firstname,
-		Lastname:  ent.Lastname,
-		Age:       ent.Age,
-		Email:     ent.Email,
-		CreatedAt: ent.CreatedAt,
-		UpdatedAt: ent.UpdatedAt,
+		ID:          ent.ID,
+		Firstname:   ent.Firstname,
+		Lastname:    ent.Lastname,
+		Age:         ent.Age,
+		Email:       ent.Email,
+		PhoneNumber: ent.PhoneNumber,
+		CreatedAt:   ent.CreatedAt,
+		UpdatedAt:   ent.UpdatedAt,
 	}
 }

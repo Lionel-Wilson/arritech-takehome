@@ -172,6 +172,8 @@ func (h *handler) CreateUser() gin.HandlerFunc {
 
 		userObject := dtomapper.MapCreateUserRequestToDomain(createUserRequest)
 
+		h.logger.Infof("number %s", userObject.PhoneNumber)
+
 		err = h.userService.CreateUser(ctx, userObject)
 		if err != nil {
 			h.logger.WithContext(ctx).Errorf("Failed to create user: %v", err)

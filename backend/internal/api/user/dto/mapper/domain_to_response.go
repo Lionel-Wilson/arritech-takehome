@@ -25,12 +25,13 @@ func MapUserToResponse(domain domain.User) dto.GetUserResponse {
 
 func mapUserToDto(user domain.User) dto.User {
 	return dto.User{
-		ID:        user.ID,
-		Firstname: user.Firstname,
-		Lastname:  user.Lastname,
-		Age:       user.Age,
-		Email:     user.Email,
-		CreatedAt: user.CreatedAt.String(),
-		UpdatedAt: user.UpdatedAt.String(),
+		ID:          user.ID,
+		Firstname:   user.Firstname,
+		Lastname:    user.Lastname,
+		Age:         user.Age,
+		Email:       user.Email,
+		PhoneNumber: user.PhoneNumber,
+		CreatedAt:   user.CreatedAt.String(),
+		UpdatedAt:   user.UpdatedAt.String(),
 	}
 }

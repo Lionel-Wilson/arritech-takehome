@@ -3,9 +3,10 @@ package entity
 import "gorm.io/gorm"
 
 type User struct {
-	Firstname string
-	Lastname  string
-	Age       int
-	Email     string `gorm:"uniqueIndex;size:255"`
+	Firstname   string
+	Lastname    string
+	Age         int
+	Email       string `gorm:"uniqueIndex;size:255"`
+	PhoneNumber string
 	gorm.Model
 }

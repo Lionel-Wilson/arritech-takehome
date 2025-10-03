@@ -80,6 +80,10 @@ func (s *userService) UpdateUserDetails(ctx context.Context, updatedUser domain.
 		userDetails.Email = *updatedUser.Email
 	}
 
+	if updatedUser.PhoneNumber != nil {
+		userDetails.PhoneNumber = *updatedUser.PhoneNumber
+	}
+
 	err = s.userRepo.UpdateUser(ctx, mapper.MapUserToEntity(userDetails))
 	if err != nil {
 		return fmt.Errorf("failed to update user details: %w", err)

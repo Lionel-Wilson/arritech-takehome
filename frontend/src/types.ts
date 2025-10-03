@@ -4,6 +4,7 @@ export interface User {
   lastname: string
   age: number
   email: string
+  phonenumber:string
   created_at?: string
   updated_at?: string
 }

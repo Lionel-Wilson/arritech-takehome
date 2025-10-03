@@ -7,10 +7,11 @@ import (
 
 func MapUserToEntity(user domain.User) *entity.User {
 	userEntity := &entity.User{
-		Firstname: user.Firstname,
-		Lastname:  user.Lastname,
-		Age:       user.Age,
-		Email:     user.Email,
+		Firstname:   user.Firstname,
+		Lastname:    user.Lastname,
+		Age:         user.Age,
+		Email:       user.Email,
+		PhoneNumber: user.PhoneNumber,
 	}
 
 	if user.ID != 0 {

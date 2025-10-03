@@ -12,14 +12,16 @@ const schema = yup.object({
   firstname: yup.string().required('First name is required'),
   lastname:  yup.string().required('Last name is required'),
   email:     yup.string().email('Invalid email').required('Email is required'),
-  age:       yup.number().typeError('Age must be a number').integer().min(18, 'Must be 18+').required()
+  age:       yup.number().typeError('Age must be a number').integer().min(18, 'Must be 18+').required(),
+  phonenumber:  yup.string().required('Phonenumber is required')
 })
 
 const initial = {
   firstname: props.user?.firstname ?? '',
   lastname:  props.user?.lastname ?? '',
   email:     props.user?.email ?? '',
-  age:       props.user?.age ?? 18
+  age:       props.user?.age ?? 18,
+  phonenumber: props.user?.phonenumber??''
 }
 
 async function onSubmit(values: any) {
@@ -77,6 +79,18 @@ async function onSubmit(values: any) {
           />
         </Field>
         <ErrorMessage name="email" class="err" />
+      </div>
+
+      <div class="row">
+        <label>Phone Number</label>
+        <Field name="phonenumber" v-slot="{ field }">
+          <el-input
+            :model-value="field.value"
+            @update:modelValue="field.onChange"
+            @blur="field.onBlur"
+          />
+        </Field>
+        <ErrorMessage name="phonenumber" class="err" />
       </div>
 
       <div class="row">
